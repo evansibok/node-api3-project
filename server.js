@@ -1,9 +1,15 @@
 const express = require('express');
 const moment = require('moment');
 
+// Import userRouter 
+const userRouter = require('./users/userRouter');
+const postRouter = require('./posts/postRouter');
+
 const server = express();
 
 server.use(express.json());
+server.use('/users', userRouter);
+server.use('/posts', postRouter);
 
 server.get('/', logger, (req, res) => {
   res.send(`<h2>Let's write some middleware!</h2>`);
@@ -12,8 +18,7 @@ server.get('/', logger, (req, res) => {
 //custom middleware
 
 function logger(req, res, next) {
-  // request method, request url, and a timestamp
-  // req.method, req.url, req
+  // console.log request method, request url, and a timestamp
   console.log("Request Method-->", req.method);
   console.log("Request URL-->", req.url);
   console.log("Request Timestamp-->", moment().format('LTS'));
