@@ -6,7 +6,16 @@ const router = express.Router();
 
 router.post('/', validateUser, (req, res) => {
   // do your magic!
-  res.status(201).json({ message: "New user created" })
+  const newUser = req.body;
+
+  userDb.insert(newUser)
+    .then(user => {
+      res.status(201).json({ message: "New user created" })
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "There was an error adding the user"})
+    });
 });
 
 router.post('/:id/posts', (req, res) => {
@@ -52,25 +61,18 @@ async function validateUserId(req, res, next) {
 function validateUser(req, res, next) {
   // do your magic!
 
-  // const { userToPost } = req.body;
-  // if(!userToPost){
-  //   res.status(400).json({ message: "missing user data" })
-  // } else if (!userToPost.name){
-  //   res.status(400).json({ message: "missing required name field" })
-  // } else {
-  //   next();
-  // }
+  // If req.body (object) does not exist - 404
+  // If req.body.name (string) does not exist - 404
+  // Else next();
 
-  // try {
-  //   const { userToPost } = req.body;
-  //   if (!userToPost) {
-  //     res.status(400).json({ message: "missing user data" })
-  //   } else {
-
-  //   }
-  // } catch {
-
-  // }
+  const userToPost = req.body;
+  if (Object.keys(userToPost).length === 0) {
+    res.status(400).json({ message: "missing user data" })
+  } else if (userToPost.name === "") {
+    res.status(400).json({ message: "missing required name field" })
+  } else {
+    next();
+  }
 }
 
 function validatePost(req, res, next) {
